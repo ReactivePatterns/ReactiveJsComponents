@@ -1,0 +1,18 @@
+{
+  "name": "react-rxjs-components",
+  "version": "0.1.0",
+  "description": "React/RxJS Components",
+  "main": "index.js",
+  "dependencies": {
+    "reactify": "~0.10.0",
+    "envify": "~1.2.1",
+    "react": "~0.10.0",
+    "director": "~1.2.3",
+    "rx": "~2.2.17"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "install": "browserify -t reactify src/app.js -o dist/js/bundle.js ",
+    "watch": "watchify -t reactify src/app.js -o dist/js/bundle.js "
+  }
+}
