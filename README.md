@@ -160,3 +160,9 @@ functionality. Sample usage(doorEventsView.jsx):
 
 Notice that all view related aspects are implemented in the view component, while the logical component is
 view independent.
+
+##Similar projects
+
+https://github.com/logicalguess/rx-state-machine
+
+https://github.com/kmcclosk/reactjs-rxjs-example
