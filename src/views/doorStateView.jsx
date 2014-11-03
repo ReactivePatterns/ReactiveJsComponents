@@ -5,11 +5,6 @@ var DoorState = React.createClass({
 
     mixins: [ ViewComponentMixin ],
 
-    getInitialState: function () {
-
-        return {state: 'CLOSED'};
-    },
-
     render: function () {
 
         return(

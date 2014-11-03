@@ -5,12 +5,7 @@ var DoorEvents = React.createClass({
 
     mixins: [ ViewComponentMixin ],
 
-    getInitialState: function () {
-
-        return {events: ['open', 'lock']};
-    },
-
-    handleEventClick: function(eventName) { console.log('CLICK', eventName);
+    handleEventClick: function(eventName) {
         this.publish({components: ['DoorEvents', 'DoorState'], event: eventName});
     },
 

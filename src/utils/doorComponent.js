@@ -28,7 +28,7 @@ function DoorComponent() {
             console.log(door.getMachineState(), '->', event.event);
             return door[event.event]();
         },
-        publishedStateMapper: function (door) { console.log('PUBLISHING DOOR', door.getMachineState(), door.getMachineEvents())
+        publishedStateMapper: function (door) {
             return {
                 'state': door.getMachineState(),
                 'events': door.getMachineEvents()
@@ -37,5 +37,4 @@ function DoorComponent() {
     }
 }
 
-var singleDoor = LogicalComponent(DoorComponent());
-module.exports = singleDoor;
+module.exports = LogicalComponent(DoorComponent());

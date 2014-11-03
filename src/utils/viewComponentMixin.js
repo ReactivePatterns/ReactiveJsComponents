@@ -2,7 +2,7 @@ var eventStream = require('./eventStream');
 
 var componentFilter = function(viewComponent, event) {
     var shouldPass = false
-    if (event.components) {
+    if (event && event.components) {
         event.components.map(function(component) {
             if(component == viewComponent.constructor.displayName) {
                 shouldPass = true;

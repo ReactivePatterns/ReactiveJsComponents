@@ -2,7 +2,7 @@ var Rx = require('rx');
 
 function EventStream() {
 
-    var eventStream = new Rx.BehaviorSubject('');
+    var eventStream = new Rx.Subject();
 
     this.subscribe = function(viewComponent, logicalComponent, eventFilter) {
         return logicalComponent.getStream(eventStream.filter(eventFilter))

@@ -29618,7 +29618,7 @@ function DoorComponent() {
             console.log(door.getMachineState(), '->', event.event);
             return door[event.event]();
         },
-        publishedStateMapper: function (door) { console.log('PUBLISHING DOOR', door.getMachineState(), door.getMachineEvents())
+        publishedStateMapper: function (door) {
             return {
                 'state': door.getMachineState(),
                 'events': door.getMachineEvents()
@@ -29627,15 +29627,14 @@ function DoorComponent() {
     }
 }
 
-var singleDoor = LogicalComponent(DoorComponent());
-module.exports = singleDoor;
+module.exports = LogicalComponent(DoorComponent());
 
 },{"./Stately.js":156,"./logicalComponent":159}],158:[function(require,module,exports){
 var Rx = require('rx');
 
 function EventStream() {
 
-    var eventStream = new Rx.BehaviorSubject('');
+    var eventStream = new Rx.Subject();
 
     this.subscribe = function(viewComponent, logicalComponent, eventFilter) {
         return logicalComponent.getStream(eventStream.filter(eventFilter))
@@ -29650,24 +29649,26 @@ function EventStream() {
 module.exports = new EventStream();
 
 },{"rx":154}],159:[function(require,module,exports){
-function LogicalComponent(logic) {
+var Rx = require('rx');
 
+function LogicalComponent(logic) {
     return {
         getStream: function (eventStream) {
-            return eventStream
+            return Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
+                eventStream
                 .scan(logic.initialState, logic.eventProcessor)
-                .map(logic.publishedStateMapper)
+                .map(logic.publishedStateMapper))
         }
     }
 }
 
 module.exports = LogicalComponent;
-},{}],160:[function(require,module,exports){
+},{"rx":154}],160:[function(require,module,exports){
 var eventStream = require('./eventStream');
 
 var componentFilter = function(viewComponent, event) {
     var shouldPass = false
-    if (event.components) {
+    if (event && event.components) {
         event.components.map(function(component) {
             if(component == viewComponent.constructor.displayName) {
                 shouldPass = true;
@@ -29712,12 +29713,7 @@ var DoorEvents = React.createClass({displayName: 'DoorEvents',
 
     mixins: [ ViewComponentMixin ],
 
-    getInitialState: function () {
-
-        return {events: ['open', 'lock']};
-    },
-
-    handleEventClick: function(eventName) { console.log('CLICK', eventName);
+    handleEventClick: function(eventName) {
         this.publish({components: ['DoorEvents', 'DoorState'], event: eventName});
     },
 
@@ -29750,11 +29746,6 @@ var ViewComponentMixin = require('../utils/viewComponentMixin');
 var DoorState = React.createClass({displayName: 'DoorState',
 
     mixins: [ ViewComponentMixin ],
-
-    getInitialState: function () {
-
-        return {state: 'CLOSED'};
-    },
 
     render: function () {
 
