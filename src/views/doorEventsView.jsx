@@ -14,9 +14,18 @@ var DoorEvents = React.createClass({
         this.publish({components: ['DoorEvents', 'DoorState'], event: eventName});
     },
 
+    cssMapping: {
+        'close': 'moon',
+        'open': 'sun',
+        'lock': 'lock',
+        'unlock': 'unlock',
+        'break': 'settings',
+        'fix': 'wrench'
+    },
+
     render: function () {
         var links = this.state.events.map(function (event) {
-            return <a className="action ui button" onClick={this.handleEventClick.bind(this, event)}><i className="icon"></i>{event}</a>;
+            return <a className="action ui button" onClick={this.handleEventClick.bind(this, event)}><i className={this.cssMapping[event] + ' icon'}></i>{event}</a>;
         }, this);
         return(
             <div className="ui labeled vertical fluid icon">

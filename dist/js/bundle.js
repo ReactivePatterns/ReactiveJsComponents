@@ -29721,9 +29721,18 @@ var DoorEvents = React.createClass({displayName: 'DoorEvents',
         this.publish({components: ['DoorEvents', 'DoorState'], event: eventName});
     },
 
+    cssMapping: {
+        'close': 'moon',
+        'open': 'sun',
+        'lock': 'lock',
+        'unlock': 'unlock',
+        'break': 'settings',
+        'fix': 'wrench'
+    },
+
     render: function () {
         var links = this.state.events.map(function (event) {
-            return React.DOM.a({className: "action ui button", onClick: this.handleEventClick.bind(this, event)}, React.DOM.i({className: "icon"}), event);
+            return React.DOM.a({className: "action ui button", onClick: this.handleEventClick.bind(this, event)}, React.DOM.i({className: this.cssMapping[event] + ' icon'}), event);
         }, this);
         return(
             React.DOM.div({className: "ui labeled vertical fluid icon"}, 
