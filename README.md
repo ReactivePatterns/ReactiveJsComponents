@@ -46,6 +46,10 @@ All component events are pushed to a global event stream.
         this.publish = function(event) {
             eventStream.onNext(event);
         };
+
+        this.filter = function(eventFilter) {
+            return eventStream.filter(eventFilter);
+        };
     }
 ```
 
@@ -64,7 +68,7 @@ component. This is similar to the ValueObject concept: http://martinfowler.com/b
 The implementation of the LogicalComponent mixin is straightforward:
 
 ```
-    function LogicalComponent(eventStream, logic) {
+    function LogicalComponent(logic) {
         return {
             getStateStream: function (eventFilter) {
                 return Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(

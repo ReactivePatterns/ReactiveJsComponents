@@ -1,6 +1,7 @@
 var Rx = require('rx');
+var eventStream = require('./eventStream');
 
-function LogicalComponent(eventStream, logic) {
+function LogicalComponent(logic) {
     return {
         getStateStream: function (eventFilter) {
             return Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(

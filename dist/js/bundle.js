@@ -29636,13 +29636,17 @@ function EventStream() {
 
     var eventStream = new Rx.Subject();
 
-    this.subscribe = function(viewComponent, logicalComponent, eventFilter) {
-        return logicalComponent.getStream(eventStream.filter(eventFilter))
+    this.wire = function(viewComponent, logicalComponent, eventFilter) {
+        return logicalComponent.getStateStream(eventFilter)
             .subscribe(viewComponent.setState.bind(viewComponent));
     };
 
     this.publish = function(event) {
         eventStream.onNext(event);
+    };
+
+    this.filter = function(eventFilter) {
+        return eventStream.filter(eventFilter);
     };
 }
 
@@ -29650,12 +29654,13 @@ module.exports = new EventStream();
 
 },{"rx":154}],159:[function(require,module,exports){
 var Rx = require('rx');
+var eventStream = require('./eventStream');
 
 function LogicalComponent(logic) {
     return {
-        getStream: function (eventStream) {
+        getStateStream: function (eventFilter) {
             return Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
-                eventStream
+                eventStream.filter(eventFilter)
                 .scan(logic.initialState, logic.eventProcessor)
                 .map(logic.publishedStateMapper))
         }
@@ -29663,7 +29668,7 @@ function LogicalComponent(logic) {
 }
 
 module.exports = LogicalComponent;
-},{"rx":154}],160:[function(require,module,exports){
+},{"./eventStream":158,"rx":154}],160:[function(require,module,exports){
 var eventStream = require('./eventStream');
 
 var componentFilter = function(viewComponent, event) {
@@ -29686,7 +29691,7 @@ var ViewComponentMixin = {
 
         var logicalComponent = settings.logicalComponents[componentName];
         if (logicalComponent) {
-            this.subscription = eventStream.subscribe(this, logicalComponent, componentFilter.bind(this, this));
+            this.subscription = eventStream.wire(this, logicalComponent, componentFilter.bind(this, this));
         }
     },
 
@@ -29728,7 +29733,7 @@ var DoorEvents = React.createClass({displayName: 'DoorEvents',
 
     render: function () {
         var links = this.state.events.map(function (event) {
-            return React.DOM.a({className: "action ui button", onClick: this.handleEventClick.bind(this, event)}, React.DOM.i({className: this.cssMapping[event] + ' icon'}), event);
+            return React.DOM.a({key: event, className: "action ui button", onClick: this.handleEventClick.bind(this, event)}, React.DOM.i({className: this.cssMapping[event] + ' icon'}), event);
         }, this);
         return(
             React.DOM.div({className: "ui labeled vertical fluid icon"}, 

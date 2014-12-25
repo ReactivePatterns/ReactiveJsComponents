@@ -12,6 +12,10 @@ function EventStream() {
     this.publish = function(event) {
         eventStream.onNext(event);
     };
+
+    this.filter = function(eventFilter) {
+        return eventStream.filter(eventFilter);
+    };
 }
 
 module.exports = new EventStream();
