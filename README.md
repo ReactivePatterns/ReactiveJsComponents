@@ -151,7 +151,7 @@ functionality. Sample usage(doorEventsView.jsx):
 
         render: function () {
             var links = this.state.events.map(function (event) {
-                return <a className="action ui button" onClick={this.handleEventClick.bind(this, event)}><i className={this.cssMapping[event] + ' icon'}></i>{event}</a>;
+                return <a key={event} className="action ui button" onClick={this.handleEventClick.bind(this, event)}><i className={this.cssMapping[event] + ' icon'}></i>{event}</a>;
             }, this);
             return(
                 <div className="ui labeled vertical fluid icon">
