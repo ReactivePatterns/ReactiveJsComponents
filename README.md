@@ -26,7 +26,7 @@ Events are published to a global event stream and filtered by each component. Ex
 
 ```
     handleEventClick: function(eventName) {
-        this.publish({components: ['DoorEvents', 'DoorState'], event: eventName});
+        this.publish({components: ['DoorComponent'], event: eventName});
     }
 ```
 ###Global Event Stream
@@ -38,8 +38,8 @@ All component events are pushed to a global event stream.
 
         var eventStream = new Rx.Subject();
 
-        this.wire = function(viewComponent, logicalComponent, eventFilter) {
-            return logicalComponent.getStateStream(eventFilter)
+        this.wire = function(viewComponent, logicalComponent) {
+            return logicalComponent.getStateStream()
                 .subscribe(viewComponent.setState.bind(viewComponent));
         };
 
@@ -68,13 +68,14 @@ component. This is similar to the ValueObject concept: http://martinfowler.com/b
 The implementation of the LogicalComponent mixin is straightforward:
 
 ```
-    function LogicalComponent(logic) {
+    function LogicalComponent(name, logic) {
+        var publishedStateStream = Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
+            eventStream.filter(componentFilter.bind(this, name))
+                .scan(logic.initialState, logic.eventProcessor)
+                .map(logic.publishedStateMapper));
         return {
-            getStateStream: function (eventFilter) {
-                return Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
-                    eventStream.filter(eventFilter)
-                    .scan(logic.initialState, logic.eventProcessor)
-                    .map(logic.publishedStateMapper))
+            getStateStream: function () {
+                return publishedStateStream
             }
         }
     }
@@ -137,7 +138,7 @@ functionality. Sample usage(doorEventsView.jsx):
         mixins: [ ViewComponentMixin ],
 
         handleEventClick: function(eventName) {
-            this.publish({components: ['DoorEvents', 'DoorState'], event: eventName});
+            this.publish({components: ['DoorComponent'], event: eventName});
         },
 
         cssMapping: {

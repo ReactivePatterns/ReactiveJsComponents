@@ -1,17 +1,5 @@
 var eventStream = require('./eventStream');
 
-var componentFilter = function(viewComponent, event) {
-    var shouldPass = false
-    if (event && event.components) {
-        event.components.map(function(component) {
-            if(component == viewComponent.constructor.displayName) {
-                shouldPass = true;
-            };
-        });
-    }
-    return shouldPass;
-};
-
 var ViewComponentMixin = {
 
     componentWillMount: function () {
@@ -20,7 +8,7 @@ var ViewComponentMixin = {
 
         var logicalComponent = settings.logicalComponents[componentName];
         if (logicalComponent) {
-            this.subscription = eventStream.wire(this, logicalComponent, componentFilter.bind(this, this));
+            this.subscription = eventStream.wire(this, logicalComponent);
         }
     },
 

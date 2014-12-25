@@ -6,7 +6,7 @@ var DoorEvents = React.createClass({
     mixins: [ ViewComponentMixin ],
 
     handleEventClick: function(eventName) {
-        this.publish({components: ['DoorEvents', 'DoorState'], event: eventName});
+        this.publish({components: ['DoorComponent'], event: eventName});
     },
 
     cssMapping: {

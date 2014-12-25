@@ -29627,7 +29627,7 @@ function DoorComponent() {
     }
 }
 
-module.exports = LogicalComponent(DoorComponent());
+module.exports = LogicalComponent('DoorComponent', DoorComponent());
 
 },{"./Stately.js":156,"./logicalComponent":159}],158:[function(require,module,exports){
 var Rx = require('rx');
@@ -29636,8 +29636,8 @@ function EventStream() {
 
     var eventStream = new Rx.Subject();
 
-    this.wire = function(viewComponent, logicalComponent, eventFilter) {
-        return logicalComponent.getStateStream(eventFilter)
+    this.wire = function(viewComponent, logicalComponent) {
+        return logicalComponent.getStateStream()
             .subscribe(viewComponent.setState.bind(viewComponent));
     };
 
@@ -29656,13 +29656,26 @@ module.exports = new EventStream();
 var Rx = require('rx');
 var eventStream = require('./eventStream');
 
-function LogicalComponent(logic) {
+var componentFilter = function(componentName, event) {
+    var shouldPass = false
+    if (event && event.components) {
+        event.components.map(function(component) {
+            if(component == componentName) {
+                shouldPass = true;
+            };
+        });
+    }
+    return shouldPass;
+};
+
+function LogicalComponent(name, logic) {
+    var publishedStateStream = Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
+        eventStream.filter(componentFilter.bind(this, name))
+            .scan(logic.initialState, logic.eventProcessor)
+            .map(logic.publishedStateMapper));
     return {
-        getStateStream: function (eventFilter) {
-            return Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
-                eventStream.filter(eventFilter)
-                .scan(logic.initialState, logic.eventProcessor)
-                .map(logic.publishedStateMapper))
+        getStateStream: function () {
+            return publishedStateStream
         }
     }
 }
@@ -29670,18 +29683,6 @@ function LogicalComponent(logic) {
 module.exports = LogicalComponent;
 },{"./eventStream":158,"rx":154}],160:[function(require,module,exports){
 var eventStream = require('./eventStream');
-
-var componentFilter = function(viewComponent, event) {
-    var shouldPass = false
-    if (event && event.components) {
-        event.components.map(function(component) {
-            if(component == viewComponent.constructor.displayName) {
-                shouldPass = true;
-            };
-        });
-    }
-    return shouldPass;
-};
 
 var ViewComponentMixin = {
 
@@ -29691,7 +29692,7 @@ var ViewComponentMixin = {
 
         var logicalComponent = settings.logicalComponents[componentName];
         if (logicalComponent) {
-            this.subscription = eventStream.wire(this, logicalComponent, componentFilter.bind(this, this));
+            this.subscription = eventStream.wire(this, logicalComponent);
         }
     },
 
@@ -29719,7 +29720,7 @@ var DoorEvents = React.createClass({displayName: 'DoorEvents',
     mixins: [ ViewComponentMixin ],
 
     handleEventClick: function(eventName) {
-        this.publish({components: ['DoorEvents', 'DoorState'], event: eventName});
+        this.publish({components: ['DoorComponent'], event: eventName});
     },
 
     cssMapping: {

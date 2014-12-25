@@ -37,4 +37,4 @@ function DoorComponent() {
     }
 }
 
-module.exports = LogicalComponent(DoorComponent());
+module.exports = LogicalComponent('DoorComponent', DoorComponent());
