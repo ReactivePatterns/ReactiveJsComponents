@@ -20,7 +20,7 @@ var ViewComponentMixin = {
 
         var logicalComponent = settings.logicalComponents[componentName];
         if (logicalComponent) {
-            this.subscription = eventStream.subscribe(this, logicalComponent, componentFilter.bind(this, this));
+            this.subscription = eventStream.wire(this, logicalComponent, componentFilter.bind(this, this));
         }
     },
 

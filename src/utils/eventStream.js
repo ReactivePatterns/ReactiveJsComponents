@@ -4,8 +4,8 @@ function EventStream() {
 
     var eventStream = new Rx.Subject();
 
-    this.subscribe = function(viewComponent, logicalComponent, eventFilter) {
-        return logicalComponent.getStream(eventStream.filter(eventFilter))
+    this.wire = function(viewComponent, logicalComponent, eventFilter) {
+        return logicalComponent.getStateStream(eventFilter)
             .subscribe(viewComponent.setState.bind(viewComponent));
     };
 

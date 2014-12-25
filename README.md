@@ -38,8 +38,8 @@ All component events are pushed to a global event stream.
 
         var eventStream = new Rx.Subject();
 
-        this.subscribe = function(viewComponent, logicalComponent, eventFilter) {
-            return logicalComponent.getStream(eventStream.filter(eventFilter))
+        this.wire = function(viewComponent, logicalComponent, eventFilter) {
+            return logicalComponent.getStateStream(eventFilter)
                 .subscribe(viewComponent.setState.bind(viewComponent));
         };
 
@@ -61,14 +61,14 @@ methods with various return types. The internal state is mapped to a public vers
 A logical component is similar to an Rx.Subject that is publishing only one type of event: the public state of the
 component. This is similar to the ValueObject concept: http://martinfowler.com/bliki/ValueObject.html .
 
-The implmentation of the LogicalComponent mixin is straightforward:
+The implementation of the LogicalComponent mixin is straightforward:
 
 ```
-    function LogicalComponent(logic) {
+    function LogicalComponent(eventStream, logic) {
         return {
-            getStream: function (eventStream) {
+            getStateStream: function (eventFilter) {
                 return Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
-                    eventStream
+                    eventStream.filter(eventFilter)
                     .scan(logic.initialState, logic.eventProcessor)
                     .map(logic.publishedStateMapper))
             }
