@@ -5,6 +5,7 @@ var DoorStateView = require('./views/doorStateView.jsx');
 var DoorEventsView = require('./views/doorEventsView.jsx');
 
 var doorComponent = require('./utils/doorComponent');
+
 settings = {
     logicalComponents: {
         'DoorState': doorComponent,
