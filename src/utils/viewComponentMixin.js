@@ -20,8 +20,11 @@ var ViewComponentMixin = {
         }
     },
 
-    publish: function (event) {
-        eventStream.publish(event);
+    publish: function (event, components) {
+        if (!components) {
+            components = [settings.logicalComponents[this.constructor.displayName].name]
+        }
+        eventStream.publish({event: event, components: components});
     }
 };
 

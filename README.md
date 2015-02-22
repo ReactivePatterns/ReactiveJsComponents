@@ -26,7 +26,7 @@ Events are published to a global event stream and filtered by each component. Ex
 
 ```
     handleEventClick: function(eventName) {
-        this.publish({components: ['DoorComponent'], event: eventName});
+        this.publish(eventName);
     }
 ```
 ###Global Event Stream
@@ -74,6 +74,7 @@ The implementation of the LogicalComponent mixin is straightforward:
                 .scan(logic.initialState, logic.eventProcessor)
                 .map(logic.publishedStateMapper));
         return {
+            name: name,
             getStateStream: function () {
                 return publishedStateStream
             }
@@ -138,7 +139,7 @@ functionality. Sample usage(doorEventsView.jsx):
         mixins: [ ViewComponentMixin ],
 
         handleEventClick: function(eventName) {
-            this.publish({components: ['DoorComponent'], event: eventName});
+            this.publish(eventName);
         },
 
         cssMapping: {

@@ -19,6 +19,7 @@ function LogicalComponent(name, logic) {
             .scan(logic.initialState, logic.eventProcessor)
             .map(logic.publishedStateMapper));
     return {
+        name: name,
         getStateStream: function () {
             return publishedStateStream
         }

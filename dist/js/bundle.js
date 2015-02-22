@@ -29270,6 +29270,7 @@ var DoorStateView = require('./views/doorStateView.jsx');
 var DoorEventsView = require('./views/doorEventsView.jsx');
 
 var doorComponent = require('./utils/doorComponent');
+
 settings = {
     logicalComponents: {
         'DoorState': doorComponent,
@@ -29674,6 +29675,7 @@ function LogicalComponent(name, logic) {
             .scan(logic.initialState, logic.eventProcessor)
             .map(logic.publishedStateMapper));
     return {
+        name: name,
         getStateStream: function () {
             return publishedStateStream
         }
@@ -29704,8 +29706,11 @@ var ViewComponentMixin = {
         }
     },
 
-    publish: function (event) {
-        eventStream.publish(event);
+    publish: function (event, components) {
+        if (!components) {
+            components = [settings.logicalComponents[this.constructor.displayName].name]
+        }
+        eventStream.publish({event: event, components: components});
     }
 };
 
@@ -29720,7 +29725,7 @@ var DoorEvents = React.createClass({displayName: 'DoorEvents',
     mixins: [ ViewComponentMixin ],
 
     handleEventClick: function(eventName) {
-        this.publish({components: ['DoorComponent'], event: eventName});
+        this.publish(eventName);
     },
 
     cssMapping: {
