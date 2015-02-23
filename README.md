@@ -3,7 +3,7 @@
 Using [React](http://facebook.github.io/react/) and [RxJS](https://github.com/Reactive-Extensions/RxJS) to build
 reactive components.
 
-Also see this entry at [Medium](https://medium.com/@StanLea/reactive-components-with-rxjs-filter-scan-map-fe2b845ccc1b)
+Also see this entry at [Medium](https://medium.com/@StanLea/reactive-components-with-rxjs-filter-scan-map-fe2b845ccc1b).
 
 React is used to implement ViewComponents, which are listening to logical ReactiveComponents.
 The reactive components are built from behavior blocks using RxJs streams and the filter-scan-map combinator sequence.
