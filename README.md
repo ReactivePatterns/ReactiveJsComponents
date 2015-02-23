@@ -72,7 +72,7 @@ The implementation of the LogicalComponent mixin is straightforward:
 ```
     function LogicalComponent(name, logic) {
         var publishedStateStream = Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
-            eventStream.filter(componentFilter.bind(this, name))
+            eventStream.filter(componentFilter.bind(this, name)).map(function(ev) {return ev.event;})
                 .scan(logic.initialState, logic.eventProcessor)
                 .map(logic.publishedStateMapper));
         return {
@@ -115,8 +115,8 @@ Example usage:
         return  {
             initialState: door.close(),
             eventProcessor: function (door, event) {
-                console.log(door.getMachineState(), '->', event.event);
-                return door[event.event]();
+                console.log(door.getMachineState(), '->', event);
+                return door[event]();
             },
             publishedStateMapper: function (door) {
                 return {

@@ -25,8 +25,8 @@ function DoorComponent() {
     return  {
         initialState: door.close(),
         eventProcessor: function (door, event) {
-            console.log(door.getMachineState(), '->', event.event);
-            return door[event.event]();
+            console.log(door.getMachineState(), '->', event);
+            return door[event]();
         },
         publishedStateMapper: function (door) {
             return {

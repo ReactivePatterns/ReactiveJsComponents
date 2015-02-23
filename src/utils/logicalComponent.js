@@ -15,7 +15,7 @@ var componentFilter = function(componentName, event) {
 
 function LogicalComponent(name, logic) {
     var publishedStateStream = Rx.Observable.return(logic.publishedStateMapper(logic.initialState)).concat(
-        eventStream.filter(componentFilter.bind(this, name))
+        eventStream.filter(componentFilter.bind(this, name)).map(function(ev) {return ev.event;})
             .scan(logic.initialState, logic.eventProcessor)
             .map(logic.publishedStateMapper));
     return {
