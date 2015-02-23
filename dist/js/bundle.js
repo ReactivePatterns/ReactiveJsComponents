@@ -29269,15 +29269,6 @@ var React = require('react/addons');
 var DoorStateView = require('./views/doorStateView.jsx');
 var DoorEventsView = require('./views/doorEventsView.jsx');
 
-var doorComponent = require('./utils/doorComponent');
-
-settings = {
-    logicalComponents: {
-        'DoorState': doorComponent,
-        'DoorEvents': doorComponent
-    }
-}
-
 React.renderComponent(
     DoorStateView(),
     document.getElementById('state')
@@ -29288,7 +29279,60 @@ React.renderComponent(
     document.getElementById('events')
 );
 
-},{"./utils/doorComponent":157,"./views/doorEventsView.jsx":161,"./views/doorStateView.jsx":162,"react/addons":3}],156:[function(require,module,exports){
+},{"./views/doorEventsView.jsx":162,"./views/doorStateView.jsx":163,"react/addons":3}],156:[function(require,module,exports){
+var Stately = require('../utils/Stately.js');
+
+var LogicalComponent = require('../utils/logicalComponent');
+
+function DoorComponent() {
+
+    var door = Stately.machine({
+        'CLOSED': {
+            'open': /* => */ 'OPEN',
+            'lock': /* => */ 'LOCKED'
+        },
+        'OPEN': {
+            'close': /* => */ 'CLOSED'
+        },
+        'LOCKED': {
+            'unlock': /* => */ 'CLOSED',
+            'break': /* => */ 'BROKEN'
+        },
+        'BROKEN': {
+            'fix': /* => */ 'OPEN'
+        }
+    });
+
+
+    return  {
+        initialState: door.close(),
+        eventProcessor: function (door, event) {
+            console.log(door.getMachineState(), '->', event.event);
+            return door[event.event]();
+        },
+        publishedStateMapper: function (door) {
+            return {
+                'state': door.getMachineState(),
+                'events': door.getMachineEvents()
+            }
+        }
+    }
+}
+
+module.exports = LogicalComponent('DoorComponent', DoorComponent());
+
+},{"../utils/Stately.js":158,"../utils/logicalComponent":160}],157:[function(require,module,exports){
+var doorComponent = require('./components/doorComponent');
+
+settings = {
+    logicalComponents: {
+        'DoorState': doorComponent,
+        'DoorEvents': doorComponent
+    }
+}
+
+module.exports = settings
+},{"./components/doorComponent":156}],158:[function(require,module,exports){
 /*
  * Stately.js: A JavaScript based finite-state machine (FSM) engine.
  *
@@ -29588,49 +29632,7 @@ React.renderComponent(
 
 });
 
-},{}],157:[function(require,module,exports){
-var Stately = require('./Stately.js');
-
-var LogicalComponent = require('./logicalComponent');
-
-function DoorComponent() {
-
-    var door = Stately.machine({
-        'CLOSED': {
-            'open': /* => */ 'OPEN',
-            'lock': /* => */ 'LOCKED'
-        },
-        'OPEN': {
-            'close': /* => */ 'CLOSED'
-        },
-        'LOCKED': {
-            'unlock': /* => */ 'CLOSED',
-            'break': /* => */ 'BROKEN'
-        },
-        'BROKEN': {
-            'fix': /* => */ 'OPEN'
-        }
-    });
-
-
-    return  {
-        initialState: door.close(),
-        eventProcessor: function (door, event) {
-            console.log(door.getMachineState(), '->', event.event);
-            return door[event.event]();
-        },
-        publishedStateMapper: function (door) {
-            return {
-                'state': door.getMachineState(),
-                'events': door.getMachineEvents()
-            }
-        }
-    }
-}
-
-module.exports = LogicalComponent('DoorComponent', DoorComponent());
-
-},{"./Stately.js":156,"./logicalComponent":159}],158:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 var Rx = require('rx');
 
 function EventStream() {
@@ -29653,7 +29655,7 @@ function EventStream() {
 
 module.exports = new EventStream();
 
-},{"rx":154}],159:[function(require,module,exports){
+},{"rx":154}],160:[function(require,module,exports){
 var Rx = require('rx');
 var eventStream = require('./eventStream');
 
@@ -29683,8 +29685,9 @@ function LogicalComponent(name, logic) {
 }
 
 module.exports = LogicalComponent;
-},{"./eventStream":158,"rx":154}],160:[function(require,module,exports){
+},{"./eventStream":159,"rx":154}],161:[function(require,module,exports){
 var eventStream = require('./eventStream');
+var settings = require('../config');
 
 var ViewComponentMixin = {
 
@@ -29716,7 +29719,7 @@ var ViewComponentMixin = {
 
 module.exports = ViewComponentMixin;
 
-},{"./eventStream":158}],161:[function(require,module,exports){
+},{"../config":157,"./eventStream":159}],162:[function(require,module,exports){
 /** @jsx React.DOM */var React = require('react/addons');
 var ViewComponentMixin = require('../utils/viewComponentMixin');
 
@@ -29750,7 +29753,7 @@ var DoorEvents = React.createClass({displayName: 'DoorEvents',
 });
 
 module.exports = DoorEvents;
-},{"../utils/viewComponentMixin":160,"react/addons":3}],162:[function(require,module,exports){
+},{"../utils/viewComponentMixin":161,"react/addons":3}],163:[function(require,module,exports){
 /** @jsx React.DOM */var React = require('react/addons');
 var ViewComponentMixin = require('../utils/viewComponentMixin');
 
@@ -29770,4 +29773,4 @@ var DoorState = React.createClass({displayName: 'DoorState',
 });
 
 module.exports = DoorState;
-},{"../utils/viewComponentMixin":160,"react/addons":3}]},{},[155]);
+},{"../utils/viewComponentMixin":161,"react/addons":3}]},{},[155]);

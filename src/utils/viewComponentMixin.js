@@ -1,4 +1,5 @@
 var eventStream = require('./eventStream');
+var settings = require('../config');
 
 var ViewComponentMixin = {
 

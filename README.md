@@ -86,9 +86,9 @@ Example usage:
 
 ```
 
-    var Stately = require('./Stately.js');
+    var Stately = require('../utils/Stately.js');
 
-    var LogicalComponent = require('./logicalComponent');
+    var LogicalComponent = require('../utils/logicalComponent');
 
     function DoorComponent() {
 
